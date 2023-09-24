@@ -9,6 +9,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    uid: {
+        type: String,
+        required: true
+    },
     isReception: {
         type: Boolean,
         default: false
