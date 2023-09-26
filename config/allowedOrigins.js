@@ -1,6 +1,5 @@
 const allowedOrigins = [
-    'http://localhost:3000',
-    'https://polycare-api.onrender.com'
+    'https://polycare-rk6p.onrender.com'
 ]
 
 module.exports = allowedOrigins
