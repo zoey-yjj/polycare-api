@@ -25,6 +25,7 @@ const login = async (req, res) => {
     const accessToken = jwt.sign(
         {
             "UserInfo": {
+                "uuid": foundUser.uid,
                 "uid": foundUser.id,
                 "isReception": foundUser.isReception
             }
@@ -58,9 +59,13 @@ const login = async (req, res) => {
 const refresh = (req, res) => {
     const cookies = req.cookies
 
+    console.log("refresh cookies ", cookies)
+
     if (!cookies?.jwt) return res.status(401).json({ message: 'Unauthorized' })
 
     const refreshToken = cookies.jwt
+
+    console.log("refresh refreshToken ", refreshToken)
 
     jwt.verify(
         refreshToken,
@@ -68,15 +73,18 @@ const refresh = (req, res) => {
         async (err, decoded) => {
             if (err) return res.status(403).json({ message: 'Forbidden' })
 
-            const foundUser = await User.findOne({ uid: decoded.uid }).exec()
+            console.log("refresh decoded ", decoded)
+
+            const foundUser = await User.findOne({ _id: decoded.uid }).exec()
 
             if (!foundUser) return res.status(401).json({ message: 'Unauthorized' })
 
             const accessToken = jwt.sign(
                 {
                     "UserInfo": {
-                        "uid": foundUser.uid,
-                        "roles": foundUser.roles
+                        "uuid": foundUser.uid,
+                        "uid": foundUser.id,
+                        "isReception": foundUser.isReception
                     }
                 },
                 process.env.ACCESS_TOKEN_SECRET,
