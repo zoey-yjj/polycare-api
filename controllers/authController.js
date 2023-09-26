@@ -25,28 +25,26 @@ const login = async (req, res) => {
     const accessToken = jwt.sign(
         {
             "UserInfo": {
-                "uid": foundUser.uid,
-                "roles": foundUser.isReception
+                "uid": foundUser.id,
+                "isReception": foundUser.isReception
             }
         },
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: '15s' }
     )
-    console.log("accessToken ", accessToken)
 
     const refreshToken = jwt.sign(
-        { "uid": foundUser.uid },
+        { "uid": foundUser.id },
         process.env.REFRESH_TOKEN_SECRET,
-        { expiresIn: '30s' }
+        { expiresIn: '2m' }
     )
-    console.log("refreshToken ", refreshToken)
 
     // Create secure cookie with refresh token 
     res.cookie('jwt', refreshToken, {
         httpOnly: true, //accessible only by web server 
         secure: true, //https
         sameSite: 'None', //cross-site cookie 
-        maxAge: 30 * 1000 //cookie expiry: set to match rT
+        maxAge: 2 * 60 * 1000 //cookie expiry: set to match rT
         // maxAge: 7 * 24 * 60 * 60 * 1000 //cookie expiry: set to match rT
     })
 
@@ -67,7 +65,7 @@ const refresh = (req, res) => {
     jwt.verify(
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
-        asyncHandler(async (err, decoded) => {
+        async (err, decoded) => {
             if (err) return res.status(403).json({ message: 'Forbidden' })
 
             const foundUser = await User.findOne({ uid: decoded.uid }).exec()
@@ -86,7 +84,7 @@ const refresh = (req, res) => {
             )
 
             res.json({ accessToken })
-        })
+        }
     )
 }
 
