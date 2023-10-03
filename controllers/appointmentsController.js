@@ -16,7 +16,7 @@ const getAllAppointments = async (req, res) => {
     // Add username to each Appointment before sending the response 
     const appointmentsWithUser = await Promise.all(appointments.map(async (Appointment) => {
         const user = await User.findById(Appointment.user).lean().exec()
-        return { ...Appointment, username: user.username }
+        return { ...Appointment, userid: user.uid }
     }))
 
     res.json(appointmentsWithUser)
